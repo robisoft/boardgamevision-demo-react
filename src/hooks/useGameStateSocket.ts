@@ -46,6 +46,8 @@ export function useGameStateSocket({ roomId }: UseGameStateSocketOptions): UseGa
         }
         setInitialLoading(false)
       })
+      // Fallback: if the server doesn't call the ack, stop showing the spinner
+      setTimeout(() => setInitialLoading(false), 5000)
     })
 
     socket.on(GAME_STATE_EVENT, (payload: unknown) => {

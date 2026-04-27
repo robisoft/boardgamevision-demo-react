@@ -75,9 +75,9 @@ export function useGameState({ roomId }: UseGameStateOptions): UseGameStateResul
           setInitialLoading(false)
         }
       })
-      .catch((err: unknown) => {
-        setStatus('error')
-        setError(err instanceof Error ? err.message : 'Impossibile connettersi')
+      .catch(() => {
+        setStatus('disconnected')
+        setError(null)
       })
 
     return () => {

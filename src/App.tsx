@@ -3,24 +3,34 @@ import { useGameStateSocket } from './hooks/useGameStateSocket'
 import ConnectionStatus from './components/ConnectionStatus'
 import type { ConnectionStatusValue } from './components/ConnectionStatus'
 import PlayerBoard from './components/PlayerBoard'
+import Footer from './components/Footer'
 import type { GameState } from './types/boardgamevision'
 
 function getRoomId(): string {
   return new URLSearchParams(window.location.search).get('roomId') ?? ''
 }
 
+
 export default function App(): React.JSX.Element {
   const roomId = getRoomId()
 
   if (!roomId) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center">
-        <p className="text-red-500 text-sm">Parametro mancante nell&apos;URL: roomId</p>
-      </div>
+      <>
+        <div className="min-h-screen bg-white flex items-center justify-center">
+          <p className="text-red-500 text-sm">Parametro mancante nell&apos;URL: roomId</p>
+        </div>
+        <Footer />
+      </>
     )
   }
 
-  return <GameView roomId={roomId} />
+  return (
+    <>
+      <GameView roomId={roomId} />
+      <Footer />
+    </>
+  )
 }
 
 interface GameViewProps {
@@ -71,7 +81,7 @@ function GamePanel({ label, gameState, nn1, nn2, status, error, initialLoading }
 
   return (
     <div className="flex flex-col flex-1">
-      <div className="px-4 py-2 text-xs font-bold uppercase tracking-widest text-gray-500 border-b border-gray-300">
+      <div className="px-4 py-2 text-xs font-bold uppercase tracking-widest bg-gray-800 text-gray-200 border-b border-gray-300">
         {label}
       </div>
       <ConnectionStatus status={status} error={error} />

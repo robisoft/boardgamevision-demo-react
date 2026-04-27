@@ -16,7 +16,7 @@ const STATUS_CONFIG: Record<ConnectionStatusValue, StatusConfig> = {
   connecting:   { bg: 'bg-yellow-400', text: 'Connessione in corso...',   pulse: true },
   reconnecting: { bg: 'bg-orange-400', text: 'Riconnessione in corso...', pulse: true },
   error:        { bg: 'bg-red-500',    text: 'Errore di connessione' },
-  disconnected: { bg: 'bg-gray-400',   text: 'Disconnesso' },
+  disconnected: { bg: 'bg-gray-400',   text: 'Server disconnesso perché il gioco non è stato attivato' },
 }
 
 interface ConnectionStatusProps {
