@@ -41,11 +41,11 @@ function GameView({ roomId }: GameViewProps): React.JSX.Element {
   return (
     <div className="min-h-screen bg-white flex">
       <div className="flex flex-col flex-1">
-        <SignalRPanel roomId={roomId} />
-      </div>
-      <div className="w-px bg-gray-400" />
-      <div className="flex flex-col flex-1" style={{ background: '#eee' }}>
-        <SocketIOPanel roomId={roomId} />
+        {import.meta.env.RUNTIME_TRANSPORT === 'signalr' ? (
+          <SignalRPanel roomId={roomId} />
+        ) : (
+          <SocketIOPanel roomId={roomId} />
+        )}
       </div>
     </div>
   )
