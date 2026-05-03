@@ -1,8 +1,8 @@
 # Boardgame Vision - Demo React
 
-Questa applicazione React dimostra come uno sviluppatore di giochi da tavolo puo' integrare la piattaforma **Boardgame Vision** nel proprio gioco.
+Questa applicazione React mostra come integrare la piattaforma **Boardgame Vision** nel proprio gioco.
 
-Boardgame Vision utilizza la computer vision per rilevare carte fisiche sul tavolo (tramite marker ArUco) e invia in tempo reale un oggetto **GameState** all'applicazione di gioco ogni volta che una carta viene aggiunta, rimossa, spostata o ruotata.
+Boardgame Vision utilizza la computer vision per rilevare carte fisiche sul tavolo (tramite marker ArUco) e invia in tempo reale un oggetto **GameState** al gioco ogni volta che una carta viene aggiunta, rimossa, spostata o ruotata.
 
 ## Come funziona
 

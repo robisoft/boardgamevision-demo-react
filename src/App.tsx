@@ -6,44 +6,19 @@ import PlayerBoard from './components/PlayerBoard'
 import Footer from './components/Footer'
 import type { GameState } from './types/boardgamevision'
 
-function getUrlParams(): { roomId: string; transport: string } {
-  const params = new URLSearchParams(window.location.search)
-  return {
-    roomId: params.get('roomId') ?? '',
-    transport: params.get('transport') ?? '',
-  }
+function getRoomId(): string {
+  return new URLSearchParams(window.location.search).get('roomId') ?? ''
 }
 
 
 export default function App(): React.JSX.Element {
-  const { roomId, transport } = getUrlParams()
+  const roomId = getRoomId()
 
-  const missingParams: string[] = []
-  if (!roomId) missingParams.push('roomId')
-  if (!transport) missingParams.push('transport')
-
-  if (missingParams.length > 0) {
+  if (!roomId) {
     return (
       <>
         <div className="min-h-screen bg-white flex items-center justify-center">
-          <p className="text-red-500 text-sm">
-            {missingParams.length === 1
-              ? `Parametro mancante nell'URL: ${missingParams[0]}`
-              : `Parametri mancanti nell'URL: ${missingParams.join(', ')}`}
-          </p>
-        </div>
-        <Footer />
-      </>
-    )
-  }
-
-  if (transport !== 'signalr' && transport !== 'socketio') {
-    return (
-      <>
-        <div className="min-h-screen bg-white flex items-center justify-center">
-          <p className="text-red-500 text-sm">
-            Valore non valido per il parametro &quot;transport&quot;: &quot;{transport}&quot;. Valori ammessi: signalr, socketio
-          </p>
+          <p className="text-red-500 text-sm">Parametro mancante nell&apos;URL: roomId</p>
         </div>
         <Footer />
       </>
@@ -52,7 +27,7 @@ export default function App(): React.JSX.Element {
 
   return (
     <>
-      <GameView roomId={roomId} transport={transport} />
+      <GameView roomId={roomId} />
       <Footer />
     </>
   )
@@ -60,18 +35,16 @@ export default function App(): React.JSX.Element {
 
 interface GameViewProps {
   roomId: string
-  transport: 'signalr' | 'socketio'
 }
 
-function GameView({ roomId, transport }: GameViewProps): React.JSX.Element {
+function GameView({ roomId }: GameViewProps): React.JSX.Element {
   return (
     <div className="min-h-screen bg-white flex">
+      <div className="flex flex-col flex-1 border-r border-gray-300">
+        <SignalRPanel roomId={roomId} />
+      </div>
       <div className="flex flex-col flex-1">
-        {transport === 'signalr' ? (
-          <SignalRPanel roomId={roomId} />
-        ) : (
-          <SocketIOPanel roomId={roomId} />
-        )}
+        <SocketIOPanel roomId={roomId} />
       </div>
     </div>
   )

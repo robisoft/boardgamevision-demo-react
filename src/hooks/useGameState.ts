@@ -78,6 +78,7 @@ export function useGameState({ roomId }: UseGameStateOptions): UseGameStateResul
       .catch(() => {
         setStatus('disconnected')
         setError(null)
+        setInitialLoading(false)
       })
 
     return () => {
