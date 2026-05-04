@@ -37,7 +37,8 @@ export interface CardRotated {
 
 // Rectangle with placed cards
 export interface ZoneState {
-  zone: string; // Rect.label
+  zone: string; // Rect.id
+  label: string; // Rect.label
   cards: Card[];
 }
 

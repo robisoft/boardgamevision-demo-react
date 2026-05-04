@@ -9,7 +9,7 @@ export default function AreaZone({ zone }: AreaZoneProps): React.JSX.Element {
   return (
     <div className="mb-6">
       <p className="text-gray-500 text-xs uppercase tracking-widest mb-2 font-medium">
-        {zone.zone}:
+        {zone.label}:
       </p>
       <div className="flex flex-wrap gap-3 min-h-[3rem]">
         {zone.cards.length === 0 ? (
