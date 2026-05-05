@@ -1,216 +1,242 @@
 # Boardgame Vision - Demo React
 
-Questa applicazione React mostra come integrare la piattaforma **Boardgame Vision** nel proprio gioco.
+> [Leggi in italiano](README_it.md)
 
-Boardgame Vision utilizza la computer vision per rilevare carte fisiche sul tavolo (tramite marker ArUco) e invia in tempo reale un oggetto **GameState** al gioco ogni volta che una carta viene aggiunta, rimossa, spostata o ruotata.
+This React application demonstrates how to integrate the **Boardgame Vision** platform into your game.
 
-## Come funziona
+Boardgame Vision uses computer vision to detect physical cards on the table (via ArUco markers) and sends a **GameState** object to your game in real time whenever a card is added, removed, moved, or rotated.
+
+## Contact & custom features
+
+Do you have a game in mind and need features not currently available in Boardgame Vision?
+Want to use custom dice, miniatures, a single board instead of 2, etc.?
+
+Write directly to robi@robisoft.it — we'd be happy to develop together the features you need.
+
+## How it works
 
 ```
-Tavolo fisico con carte (marker ArUco)
+Physical table with cards (ArUco markers)
          |
          v
   Boardgame Vision (computer vision)
          |
          v
-  Server WebSocket (SignalR o SocketIO)
+  WebSocket server (SignalR or SocketIO)
          |
          v
-  App di gioco (riceve GameState)
+  Game app (receives GameState)
 ```
 
-1. La telecamera inquadra il tavolo da gioco
-2. Boardgame Vision riconosce le carte tramite i marker ArUco stampati su ciascuna carta
-3. Il sistema determina in quale zona si trova ogni carta e la sua rotazione
-4. Ad ogni cambiamento, il server invia un evento `game-state` contenente il nuovo stato completo del gioco
+1. The camera captures the game table
+2. Boardgame Vision recognizes cards via the ArUco markers printed on each card
+3. The system determines which zone each card is in and its rotation
+4. On every change, the server sends a `game-state` event containing the new full game state and, for convenience, the differences from the previous state
 
-## Struttura del GameState
+## GameState structure
 
-### Connessione iniziale: `InitialGameState`
+### Initial connection: `InitialGameState`
 
-Alla connessione, il client richiede lo stato iniziale. La risposta contiene:
+On connection, the client requests the initial state. The response contains:
 
 ```typescript
 interface InitialGameState {
-  nn1: string;       // Nome del giocatore 1
-  nn2: string;       // Nome del giocatore 2
-  p1: ZoneState[];   // Zone del giocatore 1
-  p2: ZoneState[];   // Zone del giocatore 2
+  nn1: string;       // Player 1 name
+  nn2: string;       // Player 2 name
+  p1: ZoneState[];   // Player 1 zones
+  p2: ZoneState[];   // Player 2 zones
 }
 ```
 
-### Aggiornamenti in tempo reale: `GameState`
+### Real-time updates: `GameState`
 
-Ad ogni cambiamento sul tavolo, il server invia un oggetto `GameState`:
+On every table change, the server sends a `GameState` object:
 
 ```typescript
 interface GameState {
-  p1: ZoneState[];        // Stato completo delle zone del giocatore 1
-  p2: ZoneState[];        // Stato completo delle zone del giocatore 2
-  added?: CardAdded[];    // Carte appena aggiunte
-  removed?: CardRemoved[];// Carte appena rimosse
-  moved?: CardMoved[];    // Carte appena spostate tra zone
-  rotated?: CardRotated[];// Carte appena ruotate
+  p1: ZoneState[];        // Full state of player 1 zones
+  p2: ZoneState[];        // Full state of player 2 zones
+  added?: CardAdded[];    // Cards just added
+  removed?: CardRemoved[];// Cards just removed
+  moved?: CardMoved[];    // Cards just moved between zones
+  rotated?: CardRotated[];// Cards just rotated
 }
 ```
 
-I campi `added`, `removed`, `moved` e `rotated` sono opzionali e presenti solo quando il relativo evento si e' verificato.
+The `added`, `removed`, `moved`, and `rotated` fields represent the differences from the previous state and are only present when the corresponding event has occurred.
 
-### Tipi di supporto
+### Support types
 
-**ZoneState** - Rappresenta una zona del tavolo con le sue carte:
+**ZoneState** - Represents a zone on the table with its cards:
 
 ```typescript
 interface ZoneState {
-  zone: string;   // Nome della zona (es. "difesa", "centro", "attacco")
-  cards: Card[];  // Carte presenti in questa zona
+  zone: string;  // Zone id
+  label: string; // Zone name (e.g. "defense", "center", "attack")
+  cards: Card[]; // Cards present in this zone
 }
 ```
 
-**Card** - Una singola carta identificata dal suo marker:
+**Card** - A single card identified by its marker:
 
 ```typescript
 interface Card {
-  id: number;  // ID del marker ArUco (identifica il tipo di carta)
-  r: number;   // Rotazione in gradi (0, 90, 180, 270)
+  id: number;  // ArUco marker ID (identifies the card type)
+  r: number;   // Rotation in degrees (0, 90, 180, 270)
 }
 ```
 
-### Eventi di cambiamento
+### Change events
 
-**CardAdded** - Una carta e' stata posizionata sul tavolo:
+**CardAdded** - A card has been placed on the table:
 
 ```typescript
 interface CardAdded {
-  player: 1 | 2;   // Giocatore a cui appartiene la zona
-  zone: string;     // Nome della zona
-  card: Card;       // La carta aggiunta (id + rotazione)
+  player: 1 | 2;   // Player who owns the zone
+  zone: string;     // Zone name
+  card: Card;       // The added card (id + rotation)
 }
 ```
 
-**CardRemoved** - Una carta e' stata rimossa dal tavolo:
+**CardRemoved** - A card has been removed from the table:
 
 ```typescript
 interface CardRemoved {
-  player: 1 | 2;   // Giocatore a cui appartiene la zona
-  zone: string;     // Nome della zona
-  cardId: number;   // ID della carta rimossa
+  player: 1 | 2;   // Player who owns the zone
+  zone: string;     // Zone name
+  cardId: number;   // ID of the removed card
 }
 ```
 
-**CardMoved** - Una carta e' stata spostata da una zona a un'altra:
+**CardMoved** - A card has been moved from one zone to another:
 
 ```typescript
 interface CardMoved {
-  fromPlayer: 1 | 2;   // Giocatore di origine
-  fromZone: string;     // Zona di origine
-  toPlayer: 1 | 2;     // Giocatore di destinazione
-  toZone: string;       // Zona di destinazione
-  cardId: number;       // ID della carta
-  rotation: number;     // Rotazione nella nuova posizione
+  fromPlayer: 1 | 2;   // Source player
+  fromZone: string;     // Source zone
+  toPlayer: 1 | 2;     // Destination player
+  toZone: string;       // Destination zone
+  cardId: number;       // Card ID
+  rotation: number;     // Rotation in the new position
 }
 ```
 
-**CardRotated** - Una carta e' stata ruotata nella sua posizione:
+**CardRotated** - A card has been rotated in place:
 
 ```typescript
 interface CardRotated {
-  player: 1 | 2;       // Giocatore
-  zone: string;         // Zona
-  cardId: number;       // ID della carta
-  fromRotation: number; // Rotazione precedente
-  toRotation: number;   // Nuova rotazione
+  player: 1 | 2;       // Player
+  zone: string;         // Zone
+  cardId: number;       // Card ID
+  fromRotation: number; // Previous rotation
+  toRotation: number;   // New rotation
 }
 ```
 
-## Esempio di GameState
+## GameState example
 
 ```json
 {
   "p1": [
     {
-      "zone": "difesa",
+      "zone": "16ccd2bc-9680-4ed2-b7f8-7ea62d69ad80",
+      "label": "defense",
+      "cards": []
+    },
+    {
+      "zone": "27ca04a3-7f8e-42ab-bb0d-1bb1300ef079",
+      "label": "center",
       "cards": [
-        { "id": 4, "r": 0 },
-        { "id": 5, "r": 90 }
+        {
+          "id": 1,
+          "r": 0
+        },
+        {
+          "id": 0,
+          "r": 0
+        }
       ]
     },
     {
-      "zone": "centro",
-      "cards": [
-        { "id": 1, "r": 0 }
-      ]
-    },
-    {
-      "zone": "attacco",
+      "zone": "5031983e-e395-44f7-beda-decfd50bbb12",
+      "label": "attack",
       "cards": []
     }
   ],
   "p2": [
     {
-      "zone": "difesa",
+      "zone": "16ccd2bc-9680-4ed2-b7f8-7ea62d69ad80",
+      "label": "defense",
       "cards": []
     },
     {
-      "zone": "centro",
-      "cards": [
-        { "id": 2, "r": 180 }
-      ]
+      "zone": "27ca04a3-7f8e-42ab-bb0d-1bb1300ef079",
+      "label": "center",
+      "cards": []
     },
     {
-      "zone": "attacco",
-      "cards": [
-        { "id": 3, "r": 0 }
-      ]
+      "zone": "5031983e-e395-44f7-beda-decfd50bbb12",
+      "label": "attack",
+      "cards": []
     }
   ],
-  "added": [
-    { "player": 1, "zone": "difesa", "card": { "id": 5, "r": 90 } }
-  ]
+  "added": [],
+  "removed": [],
+  "moved": [
+    {
+      "fromPlayer": 1,
+      "fromZone": "5031983e-e395-44f7-beda-decfd50bbb12",
+      "toPlayer": 1,
+      "toZone": "27ca04a3-7f8e-42ab-bb0d-1bb1300ef079",
+      "cardId": 0,
+      "rotation": 0
+    }
+  ],
+  "rotated": []
 }
 ```
 
-## Connessione al server
+## Server connection
 
-L'app supporta due protocolli di trasporto: **SignalR** e **SocketIO**.
+The app supports two transport protocols: **SignalR** and **SocketIO**.
 
-### Parametri URL richiesti
+### Required URL parameters
 
-L'app si aspetta due query parameter nell'URL:
+The app expects two query parameters in the URL:
 
-| Parametro   | Descrizione                          | Valori ammessi         |
-|-------------|--------------------------------------|------------------------|
-| `roomId`    | Identificativo della stanza di gioco | Qualsiasi stringa      |
-| `transport` | Protocollo di connessione            | `signalr` o `socketio` |
+| Parameter   | Description                   | Allowed values         |
+|-------------|-------------------------------|------------------------|
+| `roomId`    | Game room identifier          | Any string             |
+| `transport` | Connection protocol           | `signalr` or `socketio`|
 
-Esempio: `https://boardgamevision.com/demo-react/?roomId=room-42&transport=signalr`
+Example: `https://boardgamevision.com/demo-react/?roomId=room-42&transport=signalr`
 
 ### SignalR
 
 - Endpoint: `https://boardgamevision.com/core/gameHub?roomId={roomId}`
-- Stato iniziale: `connection.invoke('GetGameState', roomId)` -> restituisce `InitialGameState`
-- Aggiornamenti: evento `game-state` -> riceve `GameState`
+- Initial state: `connection.invoke('GetGameState', roomId)` -> returns `InitialGameState`
+- Updates: `game-state` event -> receives `GameState`
 
 ### SocketIO
 
-- Endpoint: `https://boardgamevision.com` con path `/gameSocket`
+- Endpoint: `https://boardgamevision.com` with path `/gameSocket`
 - Query parameter: `roomId`
-- Stato iniziale: `socket.emit('GetGameState', roomId, callback)` -> la callback riceve `InitialGameState`
-- Aggiornamenti: evento `game-state` -> riceve `GameState`
+- Initial state: `socket.emit('GetGameState', roomId, callback)` -> callback receives `InitialGameState`
+- Updates: `game-state` event -> receives `GameState`
 
-## Avvio del progetto in locale
+## Running the project locally
 
 ```bash
-# Installare le dipendenze
+# Install dependencies
 npm install
 
-# Avviare il server di sviluppo
+# Start the development server
 npm run dev
 ```
 
-L'app sara' disponibile su `http://localhost:5173/demo-react/`.
+The app will be available at `http://localhost:5173/demo-react/`.
 
-## Tecnologie utilizzate
+## Technologies used
 
 - React 18
 - TypeScript
