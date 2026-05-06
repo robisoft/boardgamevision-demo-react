@@ -16,6 +16,7 @@ export function normalizeZones(arr: unknown): ZoneState[] {
   if (!Array.isArray(arr)) return []
   return arr.map((z: unknown): ZoneState => ({
     zone: isRecord(z) && typeof z['zone'] === 'string' ? z['zone'] : '',
+    label: isRecord(z) && typeof z['label'] === 'string' ? z['label'] : '',
     cards: isRecord(z) && Array.isArray(z['cards']) ? z['cards'].filter(isCard) : [],
   }))
 }

@@ -47,6 +47,52 @@ interface InitialGameState {
   p2: ZoneState[];   // Zone del giocatore 2
 }
 ```
+Lo stato iniziale si può richiedere in tre modi equivalenti.
+
+#### Opzione A — SignalR
+
+Dopo aver stabilito la connessione all'hub, invoca il metodo `GetGameState` passando il `roomId`:
+
+```typescript
+const state: InitialGameState = await connection.invoke('GetGameState', roomId);
+```
+
+- **Invia:** `roomId` (stringa GUID, es. `"27ca04a3-7f8e-42ab-bb0d-1bb1300ef079"`)
+- **Riceve:** oggetto `InitialGameState` oppure `null` se la room non esiste o il roomId non è valido
+
+#### Opzione B — REST API
+
+```
+GET https://boardgamevision.com/core/api/bgv/game_state/{roomId}
+```
+
+- **Invia:** `roomId` come path parameter (GUID)
+- **Riceve:** oggetto `InitialGameState` con status `200`, oppure `400` se il roomId non è un GUID valido, `404` se la room non esiste
+
+Esempio:
+
+```typescript
+const resp = await fetch(
+  `https://boardgamevision.com/core/api/bgv/game_state/${roomId}`
+);
+const state: InitialGameState = await resp.json();
+```
+
+#### Opzione C — SocketIO
+
+Dopo la connessione, emetti l'evento `GetGameState` passando un oggetto con `roomId` e una callback che riceverà la risposta:
+
+```typescript
+socket.emit('GetGameState', { roomId }, (state: InitialGameState | null) => {
+  if (state) {
+    // usa lo stato iniziale
+  }
+});
+```
+
+- **Invia:** oggetto `{ roomId: string }` (il `roomId` deve essere un GUID valido)
+- **Riceve:** oggetto `InitialGameState` come argomento della callback, oppure `null` in caso di errore
+
 
 ### Aggiornamenti in tempo reale: `GameState`
 
