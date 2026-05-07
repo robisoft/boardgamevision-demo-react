@@ -24,14 +24,14 @@ export function normalizeZones(arr: unknown): ZoneState[] {
 export function normalizeAdded(arr: unknown): CardAdded[] {
   if (!Array.isArray(arr)) return []
   return arr.filter((c): c is CardAdded =>
-    isRecord(c) && isPlayer(c['player']) && typeof c['zone'] === 'string' && isCard(c['card'])
+    isRecord(c) && isPlayer(c['player']) && typeof c['zone'] === 'string' && typeof c['label'] === 'string' && isCard(c['card'])
   )
 }
 
 export function normalizeRemoved(arr: unknown): CardRemoved[] {
   if (!Array.isArray(arr)) return []
   return arr.filter((c): c is CardRemoved =>
-    isRecord(c) && isPlayer(c['player']) && typeof c['zone'] === 'string' && typeof c['cardId'] === 'number'
+    isRecord(c) && isPlayer(c['player']) && typeof c['zone'] === 'string' && typeof c['label'] === 'string' && typeof c['cardId'] === 'number'
   )
 }
 
@@ -39,8 +39,8 @@ export function normalizeMoved(arr: unknown): CardMoved[] {
   if (!Array.isArray(arr)) return []
   return arr.filter((c): c is CardMoved =>
     isRecord(c) &&
-    isPlayer(c['fromPlayer']) && typeof c['fromZone'] === 'string' &&
-    isPlayer(c['toPlayer']) && typeof c['toZone'] === 'string' &&
+    isPlayer(c['fromPlayer']) && typeof c['fromZone'] === 'string' && typeof c['fromLabel'] === 'string' &&
+    isPlayer(c['toPlayer']) && typeof c['toZone'] === 'string' && typeof c['toLabel'] === 'string' &&
     typeof c['cardId'] === 'number' && typeof c['rotation'] === 'number'
   )
 }
@@ -48,7 +48,7 @@ export function normalizeMoved(arr: unknown): CardMoved[] {
 export function normalizeRotated(arr: unknown): CardRotated[] {
   if (!Array.isArray(arr)) return []
   return arr.filter((c): c is CardRotated =>
-    isRecord(c) && isPlayer(c['player']) && typeof c['zone'] === 'string' &&
+    isRecord(c) && isPlayer(c['player']) && typeof c['zone'] === 'string' && typeof c['label'] === 'string' &&
     typeof c['cardId'] === 'number' &&
     typeof c['fromRotation'] === 'number' && typeof c['toRotation'] === 'number'
   )

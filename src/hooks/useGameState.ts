@@ -39,7 +39,7 @@ export function useGameState({ roomId }: UseGameStateOptions): UseGameStateResul
       setGameState(normalizeGameState(payload))
       setStatus('connected')
       setError(null)
-      console.log(payload)
+      console.log('signalr', payload)
     })
 
     connection.onreconnecting((err?: Error) => {
