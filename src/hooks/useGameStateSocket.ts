@@ -38,6 +38,7 @@ export function useGameStateSocket({ roomId }: UseGameStateSocketOptions): UseGa
       setStatus('connected')
       setError(null)
       socket.emit('GetGameState', roomId, (response: unknown) => {
+        console.log('[Socket.IO] GetGameState ack received:', response)
         if (response) {
           const normalized = normalizeInitialGameState(response)
           setNn1(normalized.nn1)
