@@ -4,6 +4,8 @@ import { CanvasImage, Zone } from "./whiteboard";
 export interface Card {
   id: number;    // ArUco marker ID
   r: number;     // rotation (0, 90, 180, 270)
+  x: number;     // normalized 0-1 horizontal position (card center) within the zone
+  y: number;     // normalized 0-1 vertical position (card center) within the zone
 }
 
 export interface CardAdded {

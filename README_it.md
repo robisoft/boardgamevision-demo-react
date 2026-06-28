@@ -129,6 +129,8 @@ interface ZoneState {
 interface Card {
   id: number;  // ID del marker ArUco (identifica il tipo di carta)
   r: number;   // Rotazione in gradi (0, 90, 180, 270)
+  x: number;     // normalized 0-1 horizontal position (card center) within the zone
+  y: number;     // normalized 0-1 vertical position (card center) within the zone
 }
 ```
 
