@@ -20,26 +20,26 @@ function buildDescriptions(player: 1 | 2, { added, removed, moved, rotated }: Pl
 
   for (const c of added) {
     if (c.player === player)
-      lines.push(`Carta #${c.card.id} aggiunta nella zona "${c.zone}"`)
+      lines.push(`Carta #${c.card.id} aggiunta nella zona "${c.label}"`)
   }
 
   for (const c of removed) {
     if (c.player === player)
-      lines.push(`Carta #${c.cardId} rimossa dalla zona "${c.zone}"`)
+      lines.push(`Carta #${c.cardId} rimossa dalla zona "${c.label}"`)
   }
 
   for (const c of rotated) {
     if (c.player === player)
-      lines.push(`Carta #${c.cardId} ruotata da ${c.fromRotation}° a ${c.toRotation}° nella zona "${c.zone}"`)
+      lines.push(`Carta #${c.cardId} ruotata da ${c.fromRotation}° a ${c.toRotation}° nella zona "${c.label}"`)
   }
 
   for (const c of moved) {
     if (c.fromPlayer === player && c.toPlayer === player) {
-      lines.push(`Carta #${c.cardId} spostata da "${c.fromZone}" a "${c.toZone}"`)
+      lines.push(`Carta #${c.cardId} spostata da "${c.fromLabel}" a "${c.toLabel}"`)
     } else if (c.fromPlayer === player) {
-      lines.push(`Carta #${c.cardId} spostata fuori dalla zona "${c.fromZone}"`)
+      lines.push(`Carta #${c.cardId} spostata fuori dalla zona "${c.fromLabel}"`)
     } else if (c.toPlayer === player) {
-      lines.push(`Carta #${c.cardId} ricevuta nella zona "${c.toZone}"`)
+      lines.push(`Carta #${c.cardId} ricevuta nella zona "${c.toLabel}"`)
     }
   }
 

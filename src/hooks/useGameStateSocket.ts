@@ -55,7 +55,7 @@ export function useGameStateSocket({ roomId }: UseGameStateSocketOptions): UseGa
       setGameState(normalizeGameState(payload))
       setStatus('connected')
       setError(null)
-      console.log(payload)
+      console.log('socketio', payload)
     })
 
     socket.on('disconnect', (reason: string) => {

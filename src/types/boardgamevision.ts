@@ -11,20 +11,24 @@ export interface Card {
 export interface CardAdded {
   player: 1 | 2;
   zone: string;
+  label: string;
   card: Card;
 }
 
 export interface CardRemoved {
   player: 1 | 2;
   zone: string;
+  label: string;
   cardId: number;
 }
 
 export interface CardMoved {
   fromPlayer: 1 | 2;
   fromZone: string;
+  fromLabel: string;
   toPlayer: 1 | 2;
   toZone: string;
+  toLabel: string;
   cardId: number;
   rotation: number;
 }
@@ -32,6 +36,7 @@ export interface CardMoved {
 export interface CardRotated {
   player: 1 | 2;
   zone: string;
+  label: string;
   cardId: number;
   fromRotation: number;
   toRotation: number;
